@@ -58,26 +58,26 @@ class _af_loss:
     })
 
     # supervised losses
-    if self._args["redesign"]:      
+    # if self._args["redesign"]:      
   
-      aln = get_rmsd_loss(inputs, outputs, L=tL, include_L=False)
-      align_fn = aln["align"]
-      
-      # compute cce of binder + interface
-      aatype = inputs["aatype"]
-      cce = get_dgram_loss(inputs, outputs, aatype=aatype, return_mtx=True)
+    aln = get_rmsd_loss(inputs, outputs, L=tL, include_L=False)
+    align_fn = aln["align"]
+    
+    # compute cce of binder + interface
+    aatype = inputs["aatype"]
+    cce = get_dgram_loss(inputs, outputs, aatype=aatype, return_mtx=True)
 
-      # compute fape
-      fape = get_fape_loss(inputs, outputs, clamp=opt["fape_cutoff"], return_mtx=True)
+    # compute fape
+    fape = get_fape_loss(inputs, outputs, clamp=opt["fape_cutoff"], return_mtx=True)
 
-      aux["losses"].update({
-        "rmsd":      aln["rmsd"],
-        "dgram_cce": cce[-bL:].sum()  / (mask[-bL:].sum() + 1e-8),
-        "fape":      fape[-bL:].sum() / (mask[-bL:].sum() + 1e-8)
-      })
+    aux["losses"].update({
+      "rmsd":      aln["rmsd"],
+      "dgram_cce": cce[-bL:].sum()  / (mask[-bL:].sum() + 1e-8),
+      "fape":      fape[-bL:].sum() / (mask[-bL:].sum() + 1e-8)
+    })
 
-    else:
-      align_fn = get_rmsd_loss(inputs, outputs, L=tL)["align"]
+    # else:
+    #   align_fn = get_rmsd_loss(inputs, outputs, L=tL)["align"]
 
     if self._args["realign"]:
       aux["atom_positions"] = align_fn(aux["atom_positions"]) * aux["atom_mask"][...,None]
